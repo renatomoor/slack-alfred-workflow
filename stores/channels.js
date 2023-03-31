@@ -31,15 +31,18 @@ const actions = {
     async setChannels(channels) {
         let items = [];
         channels.forEach((channel) => {
-            channel.title = channel.name;
-            channel.subtitle = channel.purpose.value;
-            channel.valid = !channel.is_archived;
-            channel.match = getMatchText(channel);
-            channel.autocomplete = channel.name;
-            channel.arg = `slack://channel?team=${channel.context_team_id}&id=${channel.id}`
-            items.push(channel)
+            if (channel) {
+                channel.title = channel.name;
+                channel.valid = !channel.is_archived;
+                channel.autocomplete = channel.name;
+                channel.arg = `slack://channel?team=${channel.context_team_id}&id=${channel.id}`
+                if (channel.purpose) {
+                    channel.subtitle = channel.purpose?.value || '';
+                    channel.match = getMatchText(channel);
+                }
+                items.push(channel)
+            }
         });
-
         store.data.items = items
         await store.write()
     }
