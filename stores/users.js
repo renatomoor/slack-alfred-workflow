@@ -27,11 +27,11 @@ const getUserSubtitle = (user) => {
         subtitle += user.real_name
     }
 
-
-
     if (user.profile.status_text !== '') {
         subtitle += ' - '
-        if (user.profile.status_emoji_display_info.length > 0) {
+        if (user.profile.status_emoji_display_info &&
+            user.profile.status_emoji_display_info.length > 0 &&
+            user.profile.status_emoji_display_info[0].unicode) {
             subtitle += `${getEmoji(user.profile.status_emoji_display_info[0].unicode)}`
         }
         subtitle += ' ' + user.profile.status_text
@@ -51,6 +51,7 @@ const actions = {
             user.match = user.profile.real_name_normalized + ' ' + user.profile.display_name
             user.autocomplete = user.profile.display_name
             user.arg = `slack://user?team=${user.profile.team}&id=${user.id}`
+
             if (user.profile.image_original) {
                 user.icon = {
                     path: downloadAndSaveImage(user.profile.image_192, './profile_images/')
@@ -58,6 +59,7 @@ const actions = {
             }
             items.push(user)
         });
+
         store.data.items = items;
         await store.write()
     }
